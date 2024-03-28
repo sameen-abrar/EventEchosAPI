@@ -1,0 +1,1 @@
+# .NETVerticalSlice-master
