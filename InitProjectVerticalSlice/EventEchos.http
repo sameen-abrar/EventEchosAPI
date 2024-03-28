@@ -1,0 +1,6 @@
+@InitProjectVerticalSlice_HostAddress = http://localhost:5053
+
+GET {{InitProjectVerticalSlice_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
