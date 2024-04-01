@@ -7,5 +7,12 @@ namespace EventEchosAPI.Entities.Users
         public string? RoleName { get; set; }
         public string? RoleDescription { get; set; }
         public string? RoleType { get; set; }
+
+        public List<UserRolePermission> UserRolePermissions { get; set; }
+
+        public UserRole()
+        {
+            UserRolePermissions = [];
+        }
     }
 }
