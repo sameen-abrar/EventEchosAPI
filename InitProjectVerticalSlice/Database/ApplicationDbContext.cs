@@ -1,4 +1,4 @@
-﻿using EventEchosAPI.Entities;
+﻿using EventEchosAPI.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventEchosAPI.Database
@@ -13,5 +13,9 @@ namespace EventEchosAPI.Database
         }
 
         public DbSet<Auth> Auths { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<UserRole> UserRoles{ get; set; }
+        public DbSet<UserRolePermission> UserRolePermissions { get; set; }
     }
 }

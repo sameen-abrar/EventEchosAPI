@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EventEchosAPI.Entities
+namespace EventEchosAPI.Entities.Users
 {
     public class Auth
     {
