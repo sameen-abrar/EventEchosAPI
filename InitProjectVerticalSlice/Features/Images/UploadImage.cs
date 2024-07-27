@@ -68,37 +68,18 @@ namespace EventEchosAPI.Features.Images
                             .CountAsync();
 
                         var extension = Path.GetExtension(request.Image.FileName);
-                        var fileName = now.ToString("MMddyyyyHHmm") + $"_{appUser.UserId}_{++imageCount}{extension}";
+                        var fileName =  $"{request.UserId}_{now.ToString("MMddyyyyHHmm")}_{++imageCount}{extension}";
                         var filePath = Path.Combine(_uploadDirectory, fileName);
                         string base64Image = "";
 
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
-                            await stream.CopyToAsync(stream);
-                            #region Resize image for bitmap
-                            using (var image = Image.FromStream(stream))
-                            {
-                                // Calculate new dimensions maintaining aspect ratio
-                                var newWidth = image.Width / 2;
-                                var newHeight = image.Height / 2;
-
-                                using (var resizedImage = ResizeImage(image, newWidth, newHeight))
-                                {
-                                    using (var resizedStream = new MemoryStream())
-                                    {
-                                        resizedImage.Save(resizedStream, ImageFormat.Jpeg);
-                                        var imageBytes = resizedStream.ToArray();
-                                        base64Image = Convert.ToBase64String(imageBytes);
-                                    }
-                                }
-                            }
-
-                            #endregion
+                            await request.Image.CopyToAsync(stream);
                         }
 
                         var imageData = new ImageData
                         {
-                            ImageId = "Img" + GenerateId.MakeId(),
+                            ImageId = "Img-" + GenerateId.MakeId(),
                             UserId = request.UserId,
                             CreatedDate = now,
                             ImageUrl = filePath,
@@ -119,18 +100,6 @@ namespace EventEchosAPI.Features.Images
 
                     return string.Empty;
             }
-        }
-        private static Image ResizeImage(Image image, int width, int height)
-        {
-            var resizedBitmap = new Bitmap(width, height);
-            using (var graphics = Graphics.FromImage(resizedBitmap))
-            {
-                graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.SmoothingMode = SmoothingMode.HighQuality;
-                graphics.DrawImage(image, 0, 0, width, height);
-            }
-            return resizedBitmap;
         }
 
     }

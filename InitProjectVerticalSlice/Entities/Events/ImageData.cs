@@ -8,7 +8,6 @@ namespace EventEchosAPI.Entities.Events
         public string? ImageId { get; set; }
         public string? UserId { get; set; }
         public string? ImageMetaData { get; set; }
-        public string? ImageCode { get; set; }
         public string? ImageBase64 { get; set; }
         public string? ImageUrl { get; set; }
         public string? BitmapImage { get; set; }
