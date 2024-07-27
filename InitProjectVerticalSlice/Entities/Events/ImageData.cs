@@ -5,6 +5,8 @@ namespace EventEchosAPI.Entities.Events
 {
     public class ImageData:AuditableEntity
     {
+        public string? ImageId { get; set; }
+        public string? UserId { get; set; }
         public string? ImageMetaData { get; set; }
         public string? ImageCode { get; set; }
         public string? ImageBase64 { get; set; }
