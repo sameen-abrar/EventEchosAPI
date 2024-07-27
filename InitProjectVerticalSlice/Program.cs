@@ -69,6 +69,18 @@ builder.Services.AddSwaggerGen(options =>
         Description = "New API Project"
     });
 
+    // Add security definition for Bearer token
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+    
+        Type = SecuritySchemeType.ApiKey,
+        Name = "Authorization",
+        Description = "Bearer token. Write Bearer [space] and token to the header. \r\n\r\n Example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXV4",
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header
+    });
+
     // Add security requirement for Bearer token
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -104,6 +116,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

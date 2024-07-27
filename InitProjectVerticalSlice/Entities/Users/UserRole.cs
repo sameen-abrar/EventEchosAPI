@@ -9,10 +9,5 @@ namespace EventEchosAPI.Entities.Users
         public string? RoleType { get; set; }
 
         public List<UserRolePermission> UserRolePermissions { get; set; }
-
-        public UserRole()
-        {
-            UserRolePermissions = [];
-        }
     }
 }

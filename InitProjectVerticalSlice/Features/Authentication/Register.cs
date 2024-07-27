@@ -1,4 +1,4 @@
-﻿using Azure.Core;
+﻿using Azure.Identity;
 using Carter;
 using EventEchosAPI.Contracts.Auths;
 using EventEchosAPI.Database;
@@ -10,17 +10,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Reflection.Metadata;
 using System.Security.Claims;
 using System.Text;
+using EventEchosAPI.Entities.Users;
 
-namespace EventEchosAPI.Features.Auth
+namespace EventEchosAPI.Features.Authentication
 {
-    public static class Login
+    public class Register
     {
         public sealed class Command : IRequest<string>
         {
             public string UserName { get; set; }
+            public string Phone { get; set; }
             public string Password { get; set; }
         }
 
@@ -28,12 +29,13 @@ namespace EventEchosAPI.Features.Auth
         {
             public Validator()
             {
-                {
-                    RuleFor(x => x.UserName)
-                        .NotEmpty().WithMessage("Username is required")
-                        .Length(8).WithMessage("Username must be 8 Characters Long");
-                    RuleFor(x => x.Password).NotNull().NotEmpty();
-                }
+                RuleFor(x => x.UserName).NotEmpty();
+                //RuleFor(x => x.Password)
+                //.NotEmpty().WithMessage("Password is required.")
+                //.MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
+                //.Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$")
+                //.WithMessage("Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.");
+                RuleFor(x => x.Phone).MinimumLength(7);
             }
         }
 
@@ -46,54 +48,49 @@ namespace EventEchosAPI.Features.Auth
             {
                 _dbcontext = dbContext;
                 _validator = validator;
-                secretkey = configuration.GetSection("ApiSettings:Secret").Value;
             }
 
             public async Task<string> Handle(Command request, CancellationToken cancellationToken)
             {
                 var result = _validator.Validate(request);
-                if (!result.IsValid)
+
+                if(result.IsValid)
                 {
-                    throw new ValidationException(result.Errors);
-                }
-
-                var user = await _dbcontext.Auths.FirstOrDefaultAsync(x => x.UserName == request.UserName, cancellationToken);
-
-                if (user is null) throw new Exception("User is not Valid");
-
-                var checkHashedPassword = PasswordHelper.VerifyPassword(request.Password, user.Password);
-
-                if (!checkHashedPassword) throw new Exception("User Credentials Invalid");
-
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var jwtKey = Encoding.ASCII.GetBytes(secretkey ?? "");
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(new Claim[]
+                    var userInfo = new User
                     {
-                        new Claim(ClaimTypes.UserData, user.UserName)
-                    }),
-                    Expires = DateTime.UtcNow.AddDays(10),
-                    SigningCredentials = new(new SymmetricSecurityKey(jwtKey), SecurityAlgorithms.HmacSha256Signature)
-                };
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                return tokenHandler.WriteToken(token);
+                        Phone = request.Phone,
+                        UserId = "USER-" + GenerateId.MakeId(),
+                    };
+                    await _dbcontext.Users.AddAsync(userInfo);
+                    await _dbcontext.SaveChangesAsync();
+
+                    var authUser = new Auth
+                    {
+                        UserId = userInfo.UserId,
+                        UserName = request.UserName,
+                        Password = PasswordHelper.HashPassword(request.Password)
+                    };
+                    await _dbcontext.Auths.AddAsync(authUser);
+                    await _dbcontext.SaveChangesAsync();
+                    return await Task.FromResult(authUser.UserName);
+                }
+                return "Could not Register User";
             }
         }
     }
 
-    public class LoginEndpoint : ICarterModule
+    public class RegisterEndpoint : ICarterModule
     {
         private readonly APIResponse _response;
 
-        public LoginEndpoint() => _response = new APIResponse();
+        public RegisterEndpoint() => _response = new APIResponse();
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("api/user/login", async (LoginRequest request, ISender sender) =>
+            app.MapPost("api/user/register", async (RegisterRequest request, ISender sender) =>
             {
                 try
                 {
-                    var command = new Login.Command { UserName = request.UserName, Password = request.Password };
+                    var command = new Register.Command { UserName = request.UserName, Password = request.Password, Phone = request.Phone };
                     var result = await sender.Send(command);
                     _response.IsSuccess = true;
                     _response.StatusCode = HttpStatusCode.OK;

@@ -1,67 +1,66 @@
 ﻿using Carter;
-using EventEchosAPI.Contracts.Auths;
+using EventEchosAPI.Contracts.Products;
 using EventEchosAPI.Database;
-using EventEchosAPI.Helpers;
 using EventEchosAPI.Shared;
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 using System.Net;
-using System.Security.Claims;
-using System.Text;
 
-namespace EventEchosAPI.Features.Auth
+namespace EventEchosAPI.Features.Products
 {
-    public class Register
+    public class GetAllActiveProducts
     {
-        public sealed class Query : IRequest<string>
+        public sealed class Query: IRequest<ProductResponse>
         {
-
+            public int? LoadMore { get; set; } = 3;
         }
 
         public class Validator : AbstractValidator<Query>
         {
             public Validator()
             {
+                RuleFor(x => x.LoadMore).GreaterThan(0);
             }
         }
-
-        internal sealed class CommandHandler : IRequestHandler<Query, string>
+        internal sealed class QueryHandler : IRequestHandler<Query, ProductResponse>
         {
             private readonly ApplicationDbContext _dbcontext;
-            private readonly IValidator<Query> _validator;
-            private readonly string secretkey;
-            public CommandHandler(ApplicationDbContext dbContext, IConfiguration configuration, IValidator<Query> validator)
+            public QueryHandler(ApplicationDbContext dbContext)
             {
                 _dbcontext = dbContext;
-                _validator = validator;
             }
 
-            public Task<string> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<ProductResponse> Handle(Query request, CancellationToken cancellationToken)
             {
                 throw new NotImplementedException();
             }
         }
     }
 
-    public class RegisterEndpoint : ICarterModule
+    public class GetAllActiveProductsEndpoint : ICarterModule
     {
         private readonly APIResponse _response;
 
-        public RegisterEndpoint() => _response = new APIResponse();
+        public GetAllActiveProductsEndpoint() => _response = new APIResponse();
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("api/user/register", async (RegisterRequest request, ISender sender) =>
+            app.MapGet("api/products", [Authorize] async (ISender sender, int? LoadMore, HttpContext context) => 
             {
                 try
                 {
-                    var command = new Register.Query {  };
-                    var result = await sender.Send(command);
+                    var query = await sender.Send(new GetAllActiveProducts.Query { LoadMore = LoadMore });
+                    if( query == null)
+                    {
+                        _response.IsSuccess = false;
+                        _response.StatusCode = HttpStatusCode.NotFound;
+                        _response.Result = "No products found";
+                        return Results.BadRequest();
+                    }
+
                     _response.IsSuccess = true;
                     _response.StatusCode = HttpStatusCode.OK;
-                    _response.Result = new LoginResponse { AccessToken = result };
+                    _response.Result = query;
                     return Results.Ok(_response);
                 }
                 catch (ValidationException ex)
@@ -79,7 +78,7 @@ namespace EventEchosAPI.Features.Auth
                     _response.Result = ex.Message;
                     return Results.BadRequest(_response);
                 }
-            }).WithTags("Auth")
+            }).WithTags("Products")
             .Produces<APIResponse>(StatusCodes.Status200OK)
             .Produces<APIResponse>(StatusCodes.Status400BadRequest);
         }
