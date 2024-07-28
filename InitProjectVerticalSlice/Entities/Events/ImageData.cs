@@ -13,10 +13,5 @@ namespace EventEchosAPI.Entities.Events
         public string? BitmapImage { get; set; }
 
         public List<EventGuestImage> EventGuestImages { get; set; }
-
-        public ImageData()
-        {
-            EventGuestImages = [];
-        }
     }
 }

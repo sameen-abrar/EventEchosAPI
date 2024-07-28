@@ -13,6 +13,8 @@ using System.Net;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
+using EventEchosAPI.Extensions;
 
 namespace EventEchosAPI.Features.Images
 {
@@ -75,6 +77,7 @@ namespace EventEchosAPI.Features.Images
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
                             await request.Image.CopyToAsync(stream);
+                            base64Image = ConvertIFormFileToString(request.Image);
                         }
 
                         var imageData = new ImageData
@@ -100,9 +103,33 @@ namespace EventEchosAPI.Features.Images
 
                     return string.Empty;
             }
-        }
+            private string ConvertIFormFileToString(IFormFile imageFile)
+            {
+                if (imageFile == null || imageFile.Length == 0)
+                {
+                    throw new ArgumentException("Invalid image file");
+                }
 
+                using (var stream = new MemoryStream())
+                {
+                    imageFile.CopyTo(stream);
+                    stream.Seek(0, SeekOrigin.Begin);
+                    var originalBitmap =  new Bitmap(stream);
+                    //Bitmap downscaledBitmap = originalBitmap
+                    //    .Downscale(originalBitmap.Height / 2, originalBitmap.Width / 2);
+                    Bitmap downscaledBitmap = new Bitmap(originalBitmap, new Size(50, 50));
+                    using (var outputStream = new MemoryStream())
+                    {
+                        downscaledBitmap.Save(outputStream, ImageFormat.Png);
+                        return Convert.ToBase64String(outputStream.ToArray()) ?? string.Empty;
+                    }
+
+                }
+            }
+        }
+        
     }
+
     public class UplaodImageEndpoint : ICarterModule
     {
         private readonly APIResponse _response;
