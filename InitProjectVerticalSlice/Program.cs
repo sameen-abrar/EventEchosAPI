@@ -158,7 +158,7 @@ var assembly = typeof(Program).Assembly;
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSqlConnection"));
-});
+}, ServiceLifetime.Transient);
 
 // Add Automapper (uncomment if using AutoMapper)
 // builder.Services.AddAutoMapper(assembly);
@@ -268,6 +268,10 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
