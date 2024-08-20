@@ -1,8 +1,6 @@
-﻿using EventEchosAPI.Entities.Users;
-
-namespace EventEchosAPI.Entities.Roles
+﻿namespace EventEchosAPI.Entities
 {
-    public class Coordinator: RoleCommon
+    public class Coordinator : RoleCommon
     {
         public bool IsAdmin { get; set; }
         public int UserId { get; set; }

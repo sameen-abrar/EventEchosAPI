@@ -12,7 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
-using EventEchosAPI.Entities.Users;
+using EventEchosAPI.Entities;
 
 namespace EventEchosAPI.Features.Authentication
 {
@@ -59,14 +59,14 @@ namespace EventEchosAPI.Features.Authentication
                     var userInfo = new User
                     {
                         Phone = request.Phone,
-                        UserId = "USER-" + GenerateId.MakeId(),
+                        UserGeneratedId = "USER-" + GenerateId.MakeId(),
                     };
                     await _dbcontext.Users.AddAsync(userInfo);
                     await _dbcontext.SaveChangesAsync();
 
                     var authUser = new Auth
                     {
-                        UserId = userInfo.UserId,
+                        UserId = userInfo.UserGeneratedId,
                         UserName = request.UserName,
                         Password = PasswordHelper.HashPassword(request.Password)
                     };

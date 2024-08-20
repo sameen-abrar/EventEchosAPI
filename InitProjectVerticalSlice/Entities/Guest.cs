@@ -1,8 +1,6 @@
-﻿using EventEchosAPI.Entities.Users;
-
-namespace EventEchosAPI.Entities.Roles
+﻿namespace EventEchosAPI.Entities
 {
-    public class Guest: RoleCommon
+    public class Guest : RoleCommon
     {
         public int UserId { get; set; }
         public int? ImageCount { get; set; }

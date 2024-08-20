@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace EventEchosAPI.Entities.Common
+namespace EventEchosAPI.Entities
 {
     public class AuditableEntity
     {

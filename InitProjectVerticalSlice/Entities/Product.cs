@@ -1,8 +1,6 @@
-﻿using EventEchosAPI.Entities.Common;
-
-namespace EventEchosAPI.Entities.Products
+﻿namespace EventEchosAPI.Entities
 {
-    public class Product: AuditableEntity
+    public class Product : AuditableEntity
     {
         public string Name { get; set; }
         public string? Description { get; set; }

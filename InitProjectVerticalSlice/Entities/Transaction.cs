@@ -1,8 +1,6 @@
-﻿using EventEchosAPI.Entities.Common;
-
-namespace EventEchosAPI.Entities.Orders
+﻿namespace EventEchosAPI.Entities
 {
-    public class Transaction: AuditableEntity
+    public class Transaction : AuditableEntity
     {
         public int? Status { get; set; }
         public int OrderId { get; set; }

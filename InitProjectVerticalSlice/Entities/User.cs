@@ -1,12 +1,10 @@
-﻿using EventEchosAPI.Entities.Common;
-using EventEchosAPI.Entities.Roles;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-namespace EventEchosAPI.Entities.Users
+namespace EventEchosAPI.Entities
 {
     public class User : AuditableEntity
     {
-        public string? UserId { get; set; }
+        public string? UserGeneratedId { get; set; }
         public string? UserName { get; set; }
         public string? Phone { get; set; }
         public string? Address1 { get; set; }
@@ -18,8 +16,8 @@ namespace EventEchosAPI.Entities.Users
 
         public UserRole UserRole { get; set; }
 
-        public List<Admin> Admins{ get; set; }
-        public List<Coordinator> Coordinators{ get; set; }
-        public List<Guest> Guests{ get; set; }
+        public List<Admin> Admins { get; set; }
+        public List<Coordinator> Coordinators { get; set; }
+        public List<Guest> Guests { get; set; }
     }
 }

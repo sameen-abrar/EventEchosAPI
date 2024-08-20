@@ -1,8 +1,6 @@
-﻿using EventEchosAPI.Entities.Common;
-
-namespace EventEchosAPI.Entities.Users
+﻿namespace EventEchosAPI.Entities
 {
-    public class UserRole: AuditableEntity
+    public class UserRole : AuditableEntity
     {
         public string? RoleName { get; set; }
         public string? RoleDescription { get; set; }

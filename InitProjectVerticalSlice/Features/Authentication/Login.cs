@@ -69,7 +69,7 @@ namespace EventEchosAPI.Features.Authentication
                 var user = await _dbcontext.Users
                     .Include(x => x.UserRole)
                     .ThenInclude(x => x.UserRolePermissions)
-                    .FirstOrDefaultAsync(x => x.UserId == authUser.UserId, cancellationToken);
+                    .FirstOrDefaultAsync(x => x.UserGeneratedId == authUser.UserId, cancellationToken);
 
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var jwtKey = Encoding.ASCII.GetBytes(secretkey ?? "");

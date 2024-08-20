@@ -1,8 +1,4 @@
-﻿using EventEchosAPI.Entities.Events;
-using EventEchosAPI.Entities.Orders;
-using EventEchosAPI.Entities.Products;
-using EventEchosAPI.Entities.Roles;
-using EventEchosAPI.Entities.Users;
+﻿using EventEchosAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventEchosAPI.Database
@@ -36,9 +32,10 @@ namespace EventEchosAPI.Database
 
         #region Event
         public DbSet<Event> Events { get; set; }
-        public DbSet<EventCoodrinator> EventCoodrinators { get; set; }
-        public DbSet<EventGuestImage> EventGuestImages { get; set; }
+        //public DbSet<EventCoodrinator> EventCoodrinators { get; set; }
+        //public DbSet<EventGuestImage> EventGuestImages { get; set; }
         public DbSet<ImageData> ImageDatas { get; set; }
+        public DbSet<ImagePool> ImagePools { get; set; }
         #endregion
 
         #region Order
